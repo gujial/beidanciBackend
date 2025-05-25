@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 
 	"beidanciBackend/models"
@@ -12,7 +13,11 @@ import (
 
 func main() {
 	// 初始化数据库连接
-	dsn := "root:041109@tcp(127.0.0.1:3306)/beidanci?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := os.Getenv("DB_DSN")
+	if dsn == "" {
+		dsn = "root:041109@tcp(127.0.0.1:3306)/beidanci?charset=utf8mb4&parseTime=True&loc=Local"
+	}
+
 	if err := models.InitDB(dsn); err != nil {
 		panic("failed to connect database: " + err.Error())
 	}
@@ -61,5 +66,8 @@ func main() {
 		})
 	})
 
-	r.Run(":8080")
+	err := r.Run(":8080")
+	if err != nil {
+		return
+	}
 }
